@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { Button, StyleSheet, TextInput, View } from 'react-native';
+import { Button, StyleSheet, TextInput, View, Clipboard } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 
 export default class App extends Component {
@@ -26,6 +26,9 @@ export default class App extends Component {
       let encrypted;
 
       switch (this.state.method) {
+        case "n":
+          encrypted = this.nEncode(this.state.input);
+          break;
         case "b":
           encrypted = this.bEncode(this.state.input);
           break;
@@ -42,6 +45,8 @@ export default class App extends Component {
           return;
       }
 
+      Clipboard.setString(encrypted);
+
       this.setState({
         output: encrypted,
         input: "",
@@ -54,6 +59,9 @@ export default class App extends Component {
       let encrypted;
 
       switch (this.state.method) {
+        case "n":
+          encrypted = this.nDecode(this.state.input);
+          break;
         case "b":
           encrypted = this.bDecode(this.state.input);
           break;
@@ -69,6 +77,8 @@ export default class App extends Component {
         default:
           return;
       }
+
+      Clipboard.setString(encrypted);
 
       this.setState({
         output: encrypted,
@@ -93,13 +103,15 @@ export default class App extends Component {
   toDecimal = (binary) => {
     let decimal = 0;
 
-    for (let i = 0; i <= 8 - binary.length; i++) //to complete the byte
+    for (let i = 0; i < 8 - binary.length; i++) //to complete the byte
     {
       binary = "0" + binary;
     }
 
+    console.log("binary: " + binary);
+
     for (let i = 0; i < this.table.length; i++) {
-      if (binary[i] === "1") {
+      if (("" + binary[i]) === "1") {
         decimal += this.table[i];
       }
     }
@@ -108,7 +120,15 @@ export default class App extends Component {
   }
 
   toChar = (decimal) => {
+    return String.fromCharCode(decimal);
+  }
 
+  nEncode = (text) => {
+    return "not supported yet :'c";
+  }
+
+  nDecode = (text) => {
+    return "not supported yet :'c";
   }
 
   bEncode = (text) => {
@@ -116,6 +136,28 @@ export default class App extends Component {
 
     for (let i = 0; i < text.length; i++) {
       encrypted += this.toBinary(text.charCodeAt(i)) + " ";
+    }
+
+    return encrypted;
+  }
+
+  bDecode = (text) => {
+    let encrypted = "";
+
+    if (!("" + text).includes(" ")) { //just add spaces if it does not have
+      for (let i = 0; i < text.length; i += 9) {
+        text = ("" + text).substring(0, i + 8) + " " + ("" + text).substring(i + 8, text.length);
+      }
+    }
+
+    let binaries = ("" + text).split(" ");
+
+    let controller;
+    for (let i = 0; i < binaries.length; i++) {
+      controller = this.toDecimal(binaries[i]);
+      if (controller != 0) {
+        encrypted += this.toChar(controller);
+      }
     }
 
     return encrypted;
@@ -180,6 +222,18 @@ export default class App extends Component {
     return encrypted;
   }
 
+  aDecode = (text) => {
+    let encrypted = "";
+
+    let asciis = ("" + text).split(" ");
+
+    for (let i = 0; i < asciis.length; i++) {
+      encrypted += this.toChar(asciis[i]);
+    }
+
+    return encrypted;
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -204,6 +258,7 @@ export default class App extends Component {
           }}
           items={[
             { label: 'Select a method', value: 'none' },
+            { label: 'Nosense', value: 'n' },
             { label: 'Binary', value: 'b' },
             { label: 'Base 64', value: 'b64' },
             { label: 'Cesar', value: 'c' },
