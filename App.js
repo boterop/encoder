@@ -7,6 +7,7 @@ export default class App extends Component {
 
   base64 = require('base-64');
   table = [128, 64, 32, 16, 8, 4, 2, 1];
+  abc = "abcdefghijklmnopqrstuvwxyz";
 
   constructor(props) {
     super(props);
@@ -15,7 +16,7 @@ export default class App extends Component {
 
     this.state = {
       method: "none",
-      input: "El_Happy",
+      input: "",
       output: ""
     };
   }
@@ -43,6 +44,7 @@ export default class App extends Component {
 
       this.setState({
         output: encrypted,
+        input: "",
       });
     }
   }
@@ -70,6 +72,7 @@ export default class App extends Component {
 
       this.setState({
         output: encrypted,
+        input: "",
       });
     }
   }
@@ -127,7 +130,43 @@ export default class App extends Component {
   }
 
   cEncode = (text) => {
-    let encrypted = text;
+    let encrypted = "";
+
+    let num = 0;
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === " ") {
+        encrypted += "- ";
+      } else {
+        num = ("" + text).toLocaleLowerCase().charCodeAt(i) - 94;
+        if (num < 0) {
+          num = this.abc.length + num;
+        }
+        encrypted += this.abc[num % this.abc.length];
+      }
+    }
+
+    return encrypted;
+  }
+
+  cDecode = (text) => {
+    let encrypted = "";
+
+    let num = 0;
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] != " ") {
+        if (text[i] === "-") {
+          encrypted += " ";
+        } else {
+          num = ("" + text).toLocaleLowerCase().charCodeAt(i) - 100;
+          if (num < 0) {
+            num = this.abc.length + num;
+          }
+
+          encrypted += this.abc[num % this.abc.length];
+        }
+      }
+    }
+
     return encrypted;
   }
 
