@@ -1,4 +1,2 @@
-# Components
-* [Prime React](https://primefaces.org/primereact/showcase/#/setup)
-# Install
+# Install components
 'npm install'
