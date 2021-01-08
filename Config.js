@@ -153,7 +153,7 @@ export default class Config extends Component {
 
                     <StatusBar style="auto" />
 
-                    <Text style={{paddingBottom: 50}}>Browse your on google with hex code</Text>
+                    <Text style={{paddingBottom: 50}}>Browse your color on google in hex code</Text>
 
                     <View style={styles.box2}>
                         <Text style={styles.text}>Background: </Text>
