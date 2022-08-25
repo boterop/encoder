@@ -3,56 +3,19 @@ import { StatusBar } from 'expo-status-bar';
 import RNPickerSelect from 'react-native-picker-select';
 import { Ascii, Base64, Binary, Cesar, NonSense } from '../crypto';
 import { Clipboard, Colors } from '../utils';
-import {
-	Button,
-	StyleSheet,
-	TextInput,
-	View,
-	Image,
-	TouchableOpacity,
-} from 'react-native';
+import { Button, TextInput, View, Image, TouchableOpacity } from 'react-native';
+import { useStyles } from '../hooks';
 
 const Home = () => {
 	const [method, setMethod] = useState('none');
 	const [input, setInput] = useState('');
 	const [output, setOutput] = useState('');
 	const [config, setConfig] = useState(false);
-	const [colors, setColors] = useState({
+	const [styles, color, updateStyles] = useStyles({
 		color_background: '#2AB8FA',
 		color_panel: '#1BD8E3',
 		color_button_encrypt: '#1E41FD',
 		color_button_decrypt: '#1B6FE3',
-	});
-
-	useEffect(() => {
-		Colors().then(values => setColors(values));
-	}, []);
-
-	const styles = StyleSheet.create({
-		container: {
-			flex: 1,
-			alignItems: 'center',
-			justifyContent: 'center',
-			backgroundColor: colors.color_background,
-		},
-		box: {
-			display: 'flex',
-			paddingVertical: 2,
-			alignSelf: 'stretch',
-			justifyContent: 'center',
-			paddingHorizontal: 10,
-		},
-		io: {
-			height: 200,
-			marginHorizontal: 10,
-			marginVertical: 30,
-			alignSelf: 'stretch',
-			justifyContent: 'center',
-			paddingHorizontal: 10,
-			borderColor: 'black',
-			borderWidth: 1,
-			backgroundColor: colors.color_panel
-		},
 	});
 
 	const encrypt = () => {
@@ -127,7 +90,7 @@ const Home = () => {
 					alignItems: 'flex-end',
 					marginHorizontal: 15,
 				}}>
-				<TouchableOpacity onPress={() => setConfig(!config)}>
+				<TouchableOpacity onPress={() => updateStyles()}>
 					<View style={{ paddingVertical: 15 }} />
 					<Image
 						source={require('../../assets/icon.png')}
@@ -180,14 +143,14 @@ const Home = () => {
 				<Button
 					onPress={() => encrypt()}
 					title='Encrypt'
-					color={colors.color_button_encrypt}
+					color={color.color_button_encrypt}
 					accessibilityLabel='Encrypt'
 				/>
 
 				<Button
 					onPress={() => decrypt()}
 					title='Decrypt'
-					color={colors.color_button_decrypt}
+					color={color.color_button_decrypt}
 					accessibilityLabel='Decrypt'
 				/>
 			</View>
