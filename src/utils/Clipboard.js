@@ -1,5 +1,5 @@
-import cb from '@react-native-community/clipboard';
+import * as cb from 'expo-clipboard';
 
-const Clipboard = text => cb.setString(text);
+const Clipboard = text => cb.setStringAsync(text);
 
 export default Clipboard;
