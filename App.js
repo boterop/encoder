@@ -5,8 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Clipboard } from 'react-native-web';
 import RNPickerSelect from 'react-native-picker-select';
 import Config from './Config';
-import { encode as b4Encode, decode as b4Decode } from 'base-64';
-import { Cesar } from './src/crypto';
+import { Base64, Cesar } from './src/crypto';
 
 export default class App extends Component {
 
@@ -131,7 +130,7 @@ export default class App extends Component {
           encrypted = this.bEncode(this.state.input);
           break;
         case "b64":
-          encrypted = b4Encode(this.state.input);
+          encrypted = Base64.encode(this.state.input);
           break;
         case "c":
           encrypted = Cesar.encode(this.state.input);
@@ -164,7 +163,7 @@ export default class App extends Component {
           encrypted = this.bDecode(this.state.input);
           break;
         case "b64":
-          encrypted = b4Decode(this.state.input);
+          encrypted = Base64.decode(this.state.input);
           break;
         case "c":
           encrypted = Cesar.decode(this.state.input);
