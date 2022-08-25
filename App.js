@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { Button, StyleSheet, TextInput, View, Text, Clipboard, AsyncStorage, Image, TouchableOpacity, BackHandler } from 'react-native';
+import { Button, StyleSheet, TextInput, View, Text, Image, TouchableOpacity, BackHandler } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Clipboard } from 'react-native-web';
 import RNPickerSelect from 'react-native-picker-select';
 import Config from './Config';
 
