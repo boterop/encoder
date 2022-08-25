@@ -5,10 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Clipboard } from 'react-native-web';
 import RNPickerSelect from 'react-native-picker-select';
 import Config from './Config';
+import { encode as b4Encode, decode as b4Decode } from 'base-64';
+import Cesar from './src/crypto/Cesar';
 
 export default class App extends Component {
 
-  base64 = require('base-64');
   table = [128, 64, 32, 16, 8, 4, 2, 1];
   abc = "abcdefghijklmnopqrstuvwxyz";
 
@@ -130,10 +131,10 @@ export default class App extends Component {
           encrypted = this.bEncode(this.state.input);
           break;
         case "b64":
-          encrypted = this.b64Encode(this.state.input);
+          encrypted = b4Encode(this.state.input);
           break;
         case "c":
-          encrypted = this.cEncode(this.state.input);
+          encrypted = Cesar.encode(this.state.input);
           break;
         case "a":
           encrypted = this.aEncode(this.state.input);
@@ -163,10 +164,10 @@ export default class App extends Component {
           encrypted = this.bDecode(this.state.input);
           break;
         case "b64":
-          encrypted = this.b64Decode(this.state.input);
+          encrypted = b4Decode(this.state.input);
           break;
         case "c":
-          encrypted = this.cDecode(this.state.input);
+          encrypted = Cesar.decode(this.state.input);
           break;
         case "a":
           encrypted = this.aDecode(this.state.input);
@@ -254,55 +255,6 @@ export default class App extends Component {
       controller = this.toDecimal(binaries[i]);
       if (controller != 0) {
         encrypted += this.toChar(controller);
-      }
-    }
-
-    return encrypted;
-  }
-
-  b64Encode = (text) => {
-    return this.base64.encode(text);
-  }
-
-  b64Decode = (text) => {
-    return this.base64.decode(text);
-  }
-
-  cEncode = (text) => {
-    let encrypted = "";
-
-    let num = 0;
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] === " ") {
-        encrypted += "- ";
-      } else {
-        num = ("" + text).toLocaleLowerCase().charCodeAt(i) - 94;
-        if (num < 0) {
-          num = this.abc.length + num;
-        }
-        encrypted += this.abc[num % this.abc.length];
-      }
-    }
-
-    return encrypted;
-  }
-
-  cDecode = (text) => {
-    let encrypted = "";
-
-    let num = 0;
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] != " ") {
-        if (text[i] === "-") {
-          encrypted += " ";
-        } else {
-          num = ("" + text).toLocaleLowerCase().charCodeAt(i) - 100;
-          if (num < 0) {
-            num = this.abc.length + num;
-          }
-
-          encrypted += this.abc[num % this.abc.length];
-        }
       }
     }
 
