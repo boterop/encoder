@@ -1,15 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component } from 'react';
-import { Button, StyleSheet, TextInput, View, Text, Clipboard, AsyncStorage, Image, TouchableOpacity, BackHandler } from 'react-native';
+import { Button, StyleSheet, TextInput, View, Text, Image, TouchableOpacity, BackHandler } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Clipboard } from 'react-native-web';
 import RNPickerSelect from 'react-native-picker-select';
 import Config from './Config';
+import { Ascii, Base64, Binary, Cesar, NonSense } from './src/crypto';
 
 export default class App extends Component {
-
-  base64 = require('base-64');
-  table = [128, 64, 32, 16, 8, 4, 2, 1];
-  abc = "abcdefghijklmnopqrstuvwxyz";
-
   constructor(props) {
     super(props);
 
@@ -122,19 +120,19 @@ export default class App extends Component {
 
       switch (this.state.method) {
         case "n":
-          encrypted = this.nEncode(this.state.input);
+          encrypted = NonSense.encode(this.state.input);
           break;
         case "b":
-          encrypted = this.bEncode(this.state.input);
+          encrypted = Binary.encode(this.state.input);
           break;
         case "b64":
-          encrypted = this.b64Encode(this.state.input);
+          encrypted = Base64.encode(this.state.input);
           break;
         case "c":
-          encrypted = this.cEncode(this.state.input);
+          encrypted = Cesar.encode(this.state.input);
           break;
         case "a":
-          encrypted = this.aEncode(this.state.input);
+          encrypted = Ascii.encode(this.state.input);
           break;
         default:
           return;
@@ -155,19 +153,19 @@ export default class App extends Component {
 
       switch (this.state.method) {
         case "n":
-          encrypted = this.nDecode(this.state.input);
+          encrypted = NonSense.decode(this.state.input);
           break;
         case "b":
-          encrypted = this.bDecode(this.state.input);
+          encrypted = Binary.decode(this.state.input);
           break;
         case "b64":
-          encrypted = this.b64Decode(this.state.input);
+          encrypted = Base64.decode(this.state.input);
           break;
         case "c":
-          encrypted = this.cDecode(this.state.input);
+          encrypted = Cesar.decode(this.state.input);
           break;
         case "a":
-          encrypted = this.aDecode(this.state.input);
+          encrypted = Ascii.decode(this.state.input);
           break;
         default:
           return;
@@ -180,153 +178,6 @@ export default class App extends Component {
         input: "",
       });
     }
-  }
-
-  toBinary = (ascii) => {
-    let binary = "";
-    for (let i = 0; i < this.table.length; i++) {
-      if (ascii >= this.table[i]) {
-        binary += "1";
-        ascii -= this.table[i];
-      } else {
-        binary += "0";
-      }
-    }
-    return binary;
-  }
-
-  toDecimal = (binary) => {
-    let decimal = 0;
-
-    for (let i = 0; i < 8 - binary.length; i++) //to complete the byte
-    {
-      binary = "0" + binary;
-    }
-
-    console.log("binary: " + binary);
-
-    for (let i = 0; i < this.table.length; i++) {
-      if (("" + binary[i]) === "1") {
-        decimal += this.table[i];
-      }
-    }
-
-    return decimal;
-  }
-
-  toChar = (decimal) => {
-    return String.fromCharCode(decimal);
-  }
-
-  nEncode = (text) => {
-    return "not supported yet :'c";
-  }
-
-  nDecode = (text) => {
-    return "not supported yet :'c";
-  }
-
-  bEncode = (text) => {
-    let encrypted = "";
-
-    for (let i = 0; i < text.length; i++) {
-      encrypted += this.toBinary(text.charCodeAt(i)) + " ";
-    }
-
-    return encrypted;
-  }
-
-  bDecode = (text) => {
-    let encrypted = "";
-
-    if (!("" + text).includes(" ")) { //just add spaces if it does not have
-      for (let i = 0; i < text.length; i += 9) {
-        text = ("" + text).substring(0, i + 8) + " " + ("" + text).substring(i + 8, text.length);
-      }
-    }
-
-    let binaries = ("" + text).split(" ");
-
-    let controller;
-    for (let i = 0; i < binaries.length; i++) {
-      controller = this.toDecimal(binaries[i]);
-      if (controller != 0) {
-        encrypted += this.toChar(controller);
-      }
-    }
-
-    return encrypted;
-  }
-
-  b64Encode = (text) => {
-    return this.base64.encode(text);
-  }
-
-  b64Decode = (text) => {
-    return this.base64.decode(text);
-  }
-
-  cEncode = (text) => {
-    let encrypted = "";
-
-    let num = 0;
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] === " ") {
-        encrypted += "- ";
-      } else {
-        num = ("" + text).toLocaleLowerCase().charCodeAt(i) - 94;
-        if (num < 0) {
-          num = this.abc.length + num;
-        }
-        encrypted += this.abc[num % this.abc.length];
-      }
-    }
-
-    return encrypted;
-  }
-
-  cDecode = (text) => {
-    let encrypted = "";
-
-    let num = 0;
-    for (let i = 0; i < text.length; i++) {
-      if (text[i] != " ") {
-        if (text[i] === "-") {
-          encrypted += " ";
-        } else {
-          num = ("" + text).toLocaleLowerCase().charCodeAt(i) - 100;
-          if (num < 0) {
-            num = this.abc.length + num;
-          }
-
-          encrypted += this.abc[num % this.abc.length];
-        }
-      }
-    }
-
-    return encrypted;
-  }
-
-  aEncode = (text) => {
-    let encrypted = "";
-
-    for (let i = 0; i < text.length; i++) {
-      encrypted += text.charCodeAt(i) + " ";
-    }
-
-    return encrypted;
-  }
-
-  aDecode = (text) => {
-    let encrypted = "";
-
-    let asciis = ("" + text).split(" ");
-
-    for (let i = 0; i < asciis.length; i++) {
-      encrypted += this.toChar(asciis[i]);
-    }
-
-    return encrypted;
   }
 
   render() {
