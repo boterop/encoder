@@ -6,7 +6,7 @@ import { Clipboard } from 'react-native-web';
 import RNPickerSelect from 'react-native-picker-select';
 import Config from './Config';
 import { encode as b4Encode, decode as b4Decode } from 'base-64';
-import Cesar from './src/crypto/Cesar';
+import { Cesar } from './src/crypto';
 
 export default class App extends Component {
 
