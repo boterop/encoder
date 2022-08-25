@@ -28,7 +28,7 @@ const Parser = {
 			}
 		}
 		return binary;
-	}
+	},
 };
 
 export default Parser;
